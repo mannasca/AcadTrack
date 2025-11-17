@@ -8,6 +8,9 @@ import {
 } from "react-router-dom";
 import "./App.css";
 
+// =========================
+// 🌟 MAIN APP
+// =========================
 export default function App() {
   return (
     <Router>
@@ -25,60 +28,94 @@ export default function App() {
   );
 }
 
+// =========================
+// 🌟 NAVBAR WITH LOGOUT
+// =========================
 function NavBar() {
+  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
   return (
     <nav className="nav">
       <h1 className="nav-title">AcadTrack</h1>
+
       <div className="nav-links">
-        <Link to="/login">Login</Link>
-        <Link to="/register">Register</Link>
-        <Link to="/dashboard">Dashboard</Link>
+        {!token && (
+          <>
+            <Link to="/login">Login</Link>
+            <Link to="/register">Register</Link>
+          </>
+        )}
+
+        {token && (
+          <>
+            <Link to="/dashboard">Dashboard</Link>
+            <button className="logout-btn" onClick={handleLogout}>
+              Logout
+            </button>
+          </>
+        )}
       </div>
     </nav>
   );
 }
 
-/* ------------ LOGIN ------------ */
+// =========================
+// 🌟 LOGIN COMPONENT
+// =========================
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      return alert("All fields are required.");
+    }
+
+    setLoading(true);
+
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/auth/login`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        }
-      );
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
       const data = await res.json();
+      setLoading(false);
 
       if (res.ok) {
         localStorage.setItem("token", data.token);
-        alert("Login successful");
         navigate("/dashboard");
       } else {
         alert(data.message || "Login failed");
       }
     } catch (err) {
       console.error(err);
-      alert("Error connecting to server");
+      alert("Server error.");
+      setLoading(false);
     }
   };
 
   return (
     <div className="card">
       <h2 className="card-title">Login</h2>
+
       <input
         className="input"
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
+
       <input
         className="input"
         placeholder="Password"
@@ -86,22 +123,33 @@ function Login() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button className="button primary" onClick={handleLogin}>
-        Login
+
+      <button className="button primary" onClick={handleLogin} disabled={loading}>
+        {loading ? "Logging in..." : "Login"}
       </button>
     </div>
   );
 }
 
-/* ------------ REGISTER ------------ */
+// =========================
+// 🌟 REGISTER COMPONENT
+// =========================
 function Register() {
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const handleRegister = async () => {
+    if (!firstname || !lastname || !email || !password) {
+      return alert("All fields are required.");
+    }
+
+    setLoading(true);
+
     try {
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}/api/auth/register`,
@@ -113,40 +161,46 @@ function Register() {
       );
 
       const data = await res.json();
+      setLoading(false);
 
       if (res.ok) {
-        alert("Registration successful");
+        alert("Registration successful!");
         navigate("/login");
       } else {
         alert(data.message || "Registration failed");
       }
     } catch (err) {
       console.error(err);
-      alert("Error connecting to server");
+      alert("Server error.");
+      setLoading(false);
     }
   };
 
   return (
     <div className="card">
       <h2 className="card-title">Register</h2>
+
       <input
         className="input"
         placeholder="First Name"
         value={firstname}
         onChange={(e) => setFirstname(e.target.value)}
       />
+
       <input
         className="input"
         placeholder="Last Name"
         value={lastname}
         onChange={(e) => setLastname(e.target.value)}
       />
+
       <input
         className="input"
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
+
       <input
         className="input"
         placeholder="Password"
@@ -154,27 +208,36 @@ function Register() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button className="button success" onClick={handleRegister}>
-        Register
+
+      <button className="button success" onClick={handleRegister} disabled={loading}>
+        {loading ? "Registering..." : "Register"}
       </button>
     </div>
   );
 }
 
-/* ------------ DASHBOARD ------------ */
+// =========================
+// 🌟 DASHBOARD COMPONENT
+// =========================
 function Dashboard() {
   const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
   useEffect(() => {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
     const fetchActivities = async () => {
       try {
         const res = await fetch(
           `${import.meta.env.VITE_API_URL}/api/activities`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
 
@@ -183,10 +246,11 @@ function Dashboard() {
       } catch (err) {
         console.error(err);
       }
+      setLoading(false);
     };
 
     fetchActivities();
-  }, [token]);
+  }, []);
 
   return (
     <div className="card large">
@@ -197,7 +261,9 @@ function Dashboard() {
         </Link>
       </div>
 
-      {activities.length === 0 ? (
+      {loading ? (
+        <p>Loading activities...</p>
+      ) : activities.length === 0 ? (
         <p className="empty-text">No activities yet. Add your first one!</p>
       ) : (
         <ul className="activity-list">
@@ -206,14 +272,15 @@ function Dashboard() {
               <div>
                 <p className="activity-title">{a.title}</p>
                 <p className="activity-meta">
-                  Course: {a.course} | Date:{" "}
-                  {a.date ? a.date.substring(0, 10) : "N/A"}
+                  Course: {a.course} | Date: {a.date?.substring(0, 10) || "N/A"}
                 </p>
               </div>
               <span
                 className={
                   "status-pill " +
-                  (a.status === "Completed" ? "status-completed" : "status-pending")
+                  (a.status === "Completed"
+                    ? "status-completed"
+                    : "status-pending")
                 }
               >
                 {a.status || "Pending"}
@@ -226,16 +293,28 @@ function Dashboard() {
   );
 }
 
-/* ------------ ADD ACTIVITY ------------ */
+// =========================
+// 🌟 ADD ACTIVITY
+// =========================
 function AddActivity() {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [course, setCourse] = useState("");
-  const [date, setDate] = useState("");
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    course: "",
+    date: "",
+  });
+
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
   const handleAdd = async () => {
+    if (!form.title || !form.course || !form.date) {
+      return alert("Please fill all required fields.");
+    }
+
     try {
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}/api/activities/create`,
@@ -245,49 +324,58 @@ function AddActivity() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ title, description, course, date }),
+          body: JSON.stringify(form),
         }
       );
 
       if (res.ok) {
-        alert("Activity created successfully");
+        alert("Activity created!");
         navigate("/dashboard");
       } else {
         alert("Failed to create activity");
       }
     } catch (err) {
       console.error(err);
-      alert("Error connecting to server");
+      alert("Server error");
     }
   };
 
   return (
     <div className="card">
       <h2 className="card-title">Add Activity</h2>
+
       <input
         className="input"
-        placeholder="Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
+        name="title"
+        placeholder="Title *"
+        value={form.title}
+        onChange={handleChange}
       />
+
       <input
         className="input"
+        name="description"
         placeholder="Description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
+        value={form.description}
+        onChange={handleChange}
       />
+
       <input
         className="input"
-        placeholder="Course"
-        value={course}
-        onChange={(e) => setCourse(e.target.value)}
+        name="course"
+        placeholder="Course *"
+        value={form.course}
+        onChange={handleChange}
       />
+
       <input
         className="input"
         type="date"
-        value={date}
-        onChange={(e) => setDate(e.target.value)}
+        name="date"
+        value={form.date}
+        onChange={handleChange}
       />
+
       <button className="button primary" onClick={handleAdd}>
         Add Activity
       </button>
