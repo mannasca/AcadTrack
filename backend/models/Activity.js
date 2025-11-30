@@ -7,11 +7,30 @@ const activitySchema = new mongoose.Schema(
       ref: "User", 
       required: true 
     },
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    course: { type: String, required: true },
-    date: { type: String, required: true },
-    status: { type: String, default: "Pending" }
+    title: { 
+      type: String, 
+      required: true,
+      trim: true
+    },
+    description: { 
+      type: String,
+      trim: true,
+      default: ""
+    },
+    course: { 
+      type: String, 
+      required: true,
+      trim: true
+    },
+    date: { 
+      type: Date,
+      required: true
+    },
+    status: { 
+      type: String, 
+      default: "Pending",
+      enum: ["Pending", "In Progress", "Completed"]
+    }
   },
   { timestamps: true }
 );

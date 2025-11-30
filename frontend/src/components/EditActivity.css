@@ -1,0 +1,398 @@
+.edit-activity-wrapper {
+  min-height: calc(100vh - 80px);
+  height: calc(100vh - 80px);
+  background: linear-gradient(135deg, #f1f5f9 0%, #e0e7ff 100%);
+  padding: 30px 20px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+
+.edit-activity-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  padding: 35px;
+  width: 100%;
+  max-width: 700px;
+  flex: 1;
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+.form-header {
+  margin-bottom: 25px;
+  text-align: center;
+  position: relative;
+}
+
+.back-link {
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #f59e0b;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  transition: color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.back-link:hover {
+  color: #d97706;
+  text-decoration: underline;
+}
+
+.form-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+}
+
+.form-subtitle {
+  font-size: 16px;
+  color: #475569;
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.activity-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.required {
+  color: #e74c3c;
+  margin-left: 4px;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  padding: 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: var(--font-family-sans);
+  transition: all 0.3s ease;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+}
+
+.form-input:focus-visible,
+.form-textarea:focus-visible,
+.form-select:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.form-input:disabled,
+.form-textarea:disabled,
+.form-select:disabled {
+  background-color: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+  font-family: var(--font-family-sans);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.error-message,
+.success-message {
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  animation: slideDown 0.3s ease;
+}
+
+.error-message {
+  background-color: #ffe0e0;
+  color: #c33;
+  border-left: 4px solid #e74c3c;
+}
+
+.success-message {
+  background-color: #e0ffe0;
+  color: #2c5;
+  border-left: 4px solid #27ae60;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.btn-submit,
+.btn-cancel {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  text-align: center;
+  display: inline-block;
+}
+
+.btn-submit {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: white;
+}
+
+.btn-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 180, 216, 0.4);
+}
+
+.btn-submit:focus,
+.btn-submit:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.btn-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn-cancel {
+  background-color: #f0f0f0;
+  color: #666;
+}
+
+.btn-cancel:hover {
+  background-color: #e0e0e0;
+}
+
+.loading {
+  text-align: center;
+  color: #2563eb;
+  font-size: 16px;
+  padding: 40px 20px;
+  font-weight: 500;
+}
+
+.form-illustration {
+  display: none;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+}
+
+.illustration-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+.illustration-item {
+  font-size: 60px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.illustration-item:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.illustration-item:nth-child(3) {
+  animation-delay: 1s;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.illustration-text {
+  color: white;
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Tablet and larger screens */
+@media (max-width: 900px) {
+  .edit-activity-wrapper {
+    flex-direction: column;
+  }
+
+  .form-illustration {
+    display: none;
+  }
+
+  .edit-activity-container {
+    padding: 30px;
+    max-width: 100%;
+  }
+
+  .form-title {
+    font-size: 24px;
+  }
+}
+
+/* Tablet screens */
+@media (max-width: 768px) {
+  .edit-activity-wrapper {
+    padding: 15px;
+  }
+
+  .edit-activity-container {
+    padding: 25px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-title {
+    font-size: 22px;
+    margin-top: 20px;
+  }
+
+  .back-link {
+    position: static;
+    text-align: left;
+    margin-bottom: 15px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn-submit,
+  .btn-cancel {
+    width: 100%;
+  }
+}
+
+/* Mobile screens */
+@media (max-width: 480px) {
+  .edit-activity-wrapper {
+    padding: 10px;
+  }
+
+  .edit-activity-container {
+    padding: 20px;
+    border-radius: 8px;
+  }
+
+  .form-title {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  .form-subtitle {
+    font-size: 12px;
+  }
+
+  .form-label {
+    font-size: 13px;
+  }
+
+  .form-input,
+  .form-textarea,
+  .form-select {
+    padding: 10px 12px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  .btn-submit,
+  .btn-cancel {
+    padding: 10px 15px;
+    font-size: 14px;
+  }
+
+  .error-message,
+  .success-message {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+}
+
+/* Small mobile screens */
+@media (max-width: 360px) {
+  .edit-activity-container {
+    padding: 15px;
+  }
+
+  .form-title {
+    font-size: 18px;
+  }
+
+  .form-label {
+    font-size: 12px;
+  }
+
+  .form-input,
+  .form-textarea,
+  .form-select {
+    padding: 8px 10px;
+  }
+}
+
+
