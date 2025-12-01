@@ -1,13 +1,14 @@
 .edit-activity-wrapper {
   min-height: calc(100vh - 80px);
-  height: calc(100vh - 80px);
   background: linear-gradient(135deg, #f1f5f9 0%, #e0e7ff 100%);
   padding: 30px 20px;
   display: flex;
   gap: 20px;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
   margin-bottom: 0;
 }
 
@@ -392,6 +393,129 @@
   .form-textarea,
   .form-select {
     padding: 8px 10px;
+  }
+}
+
+/* ===== MOBILE RESPONSIVENESS ===== */
+@media (max-width: 768px) {
+  .edit-activity-wrapper {
+    padding: 20px 15px;
+    gap: 15px;
+  }
+
+  .edit-activity-container {
+    padding: 25px;
+    max-width: 100%;
+    border-radius: 12px;
+  }
+
+  .form-title {
+    font-size: 28px;
+  }
+
+  .form-subtitle {
+    font-size: 14px;
+  }
+
+  .form-header {
+    margin-bottom: 20px;
+  }
+
+  .back-link {
+    font-size: 13px;
+    position: relative;
+    left: 0;
+    margin-bottom: 10px;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-label {
+    font-size: 13px;
+  }
+
+  .form-input,
+  .form-textarea,
+  .form-select {
+    font-size: 16px !important;
+    padding: 12px;
+  }
+
+  .form-textarea {
+    min-height: 120px;
+  }
+
+  .form-actions {
+    gap: 10px;
+  }
+
+  .form-actions button {
+    font-size: 15px;
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .edit-activity-wrapper {
+    flex-direction: column;
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .edit-activity-container {
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 100%;
+  }
+
+  .form-title {
+    font-size: 24px;
+  }
+
+  .form-subtitle {
+    font-size: 13px;
+  }
+
+  .back-link {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
+  .form-header {
+    margin-bottom: 15px;
+    text-align: left;
+  }
+
+  .form-group {
+    margin-bottom: 14px;
+  }
+
+  .form-label {
+    font-size: 12px;
+  }
+
+  .form-input,
+  .form-textarea,
+  .form-select {
+    font-size: 16px !important;
+    padding: 11px;
+  }
+
+  .form-textarea {
+    min-height: 100px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .form-actions button {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
   }
 }
 

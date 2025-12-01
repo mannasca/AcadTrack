@@ -1,14 +1,15 @@
 .add-activity-wrapper {
   display: flex;
   min-height: calc(100vh - 80px);
-  height: calc(100vh - 80px);
   background: linear-gradient(135deg, #f1f5f9 0%, #e0e7ff 100%);
   align-items: center;
   justify-content: center;
   padding: 30px 20px;
   font-family: var(--font-family-sans);
   gap: 60px;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .add-activity-container {
@@ -504,6 +505,110 @@
 
   .btn-cancel:hover {
     background: #4b5563;
+  }
+}
+
+/* ===== MOBILE RESPONSIVENESS ===== */
+@media (max-width: 768px) {
+  .add-activity-wrapper {
+    padding: 20px 15px;
+    gap: 20px;
+  }
+
+  .add-activity-container {
+    padding: 25px;
+    max-width: 100%;
+  }
+
+  .form-title {
+    font-size: 28px;
+  }
+
+  .form-subtitle {
+    font-size: 14px;
+  }
+
+  .form-header {
+    margin-bottom: 20px;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-label {
+    font-size: 13px;
+  }
+
+  .form-input,
+  .form-textarea {
+    font-size: 16px !important;
+    padding: 12px;
+  }
+
+  .form-textarea {
+    min-height: 120px;
+  }
+
+  .form-actions {
+    gap: 10px;
+  }
+
+  .form-actions button {
+    font-size: 15px;
+    padding: 12px;
+    flex: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .add-activity-wrapper {
+    flex-direction: column;
+    padding: 10px;
+    gap: 15px;
+  }
+
+  .add-activity-container {
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 100%;
+  }
+
+  .form-title {
+    font-size: 24px;
+  }
+
+  .form-subtitle {
+    font-size: 13px;
+  }
+
+  .form-input,
+  .form-textarea {
+    font-size: 16px !important;
+    padding: 11px;
+  }
+
+  .form-textarea {
+    min-height: 100px;
+  }
+
+  .form-header {
+    margin-bottom: 15px;
+  }
+
+  .form-group {
+    margin-bottom: 14px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .form-actions button {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
   }
 }
 

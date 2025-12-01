@@ -4,14 +4,14 @@
 
 .profile-wrapper {
   min-height: calc(100vh - 80px);
-  height: calc(100vh - 80px);
   background: linear-gradient(135deg, #f1f5f9 0%, #e0e7ff 100%);
   padding: 30px 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
   overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .profile-container {
@@ -425,6 +425,119 @@
   .btn {
     padding: 9px 10px;
     font-size: 12px;
+  }
+}
+
+/* ===== MOBILE RESPONSIVENESS ===== */
+@media (max-width: 768px) {
+  .profile-wrapper {
+    padding: 20px 15px;
+  }
+
+  .profile-container {
+    max-width: 100%;
+  }
+
+  .back-link {
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  .profile-card {
+    padding: 25px;
+    border-radius: 12px;
+  }
+
+  .profile-title {
+    font-size: 28px;
+  }
+
+  .profile-subtitle {
+    font-size: 14px;
+  }
+
+  .profile-header {
+    margin-bottom: 20px;
+  }
+
+  .detail-group {
+    margin-bottom: 14px;
+  }
+
+  .detail-group label {
+    font-size: 12px;
+  }
+
+  .detail-group p {
+    font-size: 14px;
+  }
+
+  .profile-actions {
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .profile-actions button {
+    font-size: 14px;
+    padding: 11px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-wrapper {
+    padding: 10px;
+    padding-top: 15px;
+  }
+
+  .profile-container {
+    width: 100%;
+  }
+
+  .back-link {
+    font-size: 12px;
+    margin-bottom: 15px;
+  }
+
+  .profile-card {
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  .profile-title {
+    font-size: 24px;
+  }
+
+  .profile-subtitle {
+    font-size: 13px;
+  }
+
+  .profile-header {
+    margin-bottom: 15px;
+  }
+
+  .detail-group {
+    margin-bottom: 12px;
+  }
+
+  .detail-group label {
+    font-size: 11px;
+  }
+
+  .detail-group p {
+    font-size: 13px;
+    word-break: break-word;
+  }
+
+  .profile-actions {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 15px;
+  }
+
+  .profile-actions button {
+    width: 100%;
+    font-size: 13px;
+    padding: 11px 15px;
   }
 }
 
