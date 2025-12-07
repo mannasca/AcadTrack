@@ -3,9 +3,6 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 
-// Clear localStorage on app startup - ensures fresh session each time
-localStorage.clear();
-
 // Prevent back/forward cache issues
 window.addEventListener('pagehide', () => {
   // Clear any pending requests
