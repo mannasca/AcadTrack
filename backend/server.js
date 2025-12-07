@@ -34,7 +34,16 @@ app.use(compression({
   ]
 }));
 
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://acadtrack.netlify.app"   // Your frontend URL
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
 // IMPORTANT — Must come BEFORE routes
 app.use(express.json({ limit: '10mb' }));
