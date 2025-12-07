@@ -33,12 +33,7 @@ const makeRequest = async (
   }
 
   try {
-    // Add timestamp for cache busting on GET requests
     let url = `${BASE_URL}${endpoint}`;
-    if (method === "GET") {
-      const separator = url.includes("?") ? "&" : "?";
-      url += `${separator}_t=${Date.now()}`;
-    }
 
     const response = await fetch(url, {
       method,
