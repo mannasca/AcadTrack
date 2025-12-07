@@ -47,8 +47,9 @@ export default function Home() {
 
   const fetchActivities = async () => {
     try {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/activities`,
+        `${baseUrl}/activities`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
