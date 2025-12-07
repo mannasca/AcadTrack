@@ -88,6 +88,11 @@ import activityRoutes from "./routes/activityRoutes.js";
 app.use("/api/auth", authRoutes);
 app.use("/api/activities", activityRoutes);
 
+// Health check endpoint (for Render wake-up / monitoring)
+app.get("/api/health", (req, res) => {
+  res.json({ success: true, message: "Backend is healthy", timestamp: new Date().toISOString() });
+});
+
 app.get("/", (req, res) => res.send("Backend Running"));
 
 const PORT = process.env.PORT || 5000;

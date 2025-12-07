@@ -1,12 +1,32 @@
 import { createContext, useState, useEffect, useCallback } from "react";
 import { getCurrentUser, isAuthenticated, clearUserData } from "../services/api";
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  // Wake up backend on startup (Render free tier hibernates after 15 mins)
+  useEffect(() => {
+    const wakeUpBackend = async () => {
+      try {
+        await fetch(`${BASE_URL}/health`, { 
+          method: "GET",
+          mode: "cors"
+        }).catch(() => {
+          // Ignore errors - just trying to wake up the backend
+        });
+      } catch (err) {
+        // Silent fail - this is just for waking up backend
+      }
+    };
+    
+    wakeUpBackend();
+  }, []);
 
   // Initialize auth state from localStorage on app startup
   // This allows users to stay logged in across page refreshes
