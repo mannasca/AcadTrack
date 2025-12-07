@@ -15,15 +15,15 @@ const router = express.Router();
 // All routes protected - requires authentication
 router.use(protect);
 
-// All authenticated users - GET routes (before parameterized routes)
+// GET routes (before parameterized routes)
 router.get("/", getActivities);
 
-// Admin-only routes with specific paths (before parameterized :id route)
-router.post("/create", authorize("admin"), createActivity);
-
-// Parameterized routes (must come last)
-router.get("/:id", getActivity);
+// Admin-only routes
+router.post("/", authorize("admin"), createActivity);
 router.put("/:id", authorize("admin"), updateActivity);
 router.delete("/:id", authorize("admin"), deleteActivity);
+
+// Parameterized GET route (must come last)
+router.get("/:id", getActivity);
 
 export default router;

@@ -25,8 +25,6 @@ const makeRequest = async (
 
   const finalHeaders = {
     "Content-Type": "application/json",
-    Accept: "application/json",
-    "Accept-Encoding": "gzip, deflate, br",
     ...headers,
   };
 
@@ -35,48 +33,49 @@ const makeRequest = async (
   }
 
   try {
-    const res = await fetch(`${BASE_URL}${endpoint}`, {
+    const response = await fetch(`${BASE_URL}${endpoint}`, {
       method,
       headers: finalHeaders,
-      body,
-      keepalive: true,
+      body: body || null,
+      mode: "cors",
+      credentials: "include",
     });
 
-    let data = {};
-    try {
-      data = await res.json();
-    } catch {
+    // Always try to parse JSON response
+    let data;
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      data = await response.json();
+    } else {
       data = {};
     }
 
-    if (!res.ok) {
+    // Handle non-OK responses
+    if (!response.ok) {
       return {
         success: false,
-        error: data.message || `HTTP ${res.status}`,
-        status: res.status,
+        message: data.message || `Error: ${response.status}`,
+        error: data.message || `HTTP ${response.status}`,
+        status: response.status,
+        data: data,
       };
     }
 
-    // Flatten success responses
-    if (data.success !== undefined && data.data !== undefined) {
-      return {
-        success: data.success,
-        data: data.data,
-        message: data.message,
-        status: res.status,
-      };
-    }
-
+    // Handle successful responses
     return {
-      success: true,
-      data,
-      status: res.status,
+      success: data.success !== undefined ? data.success : true,
+      message: data.message || "Success",
+      data: data.data || data,
+      status: response.status,
     };
   } catch (err) {
+    console.error(`API Error on ${endpoint}:`, err);
     return {
       success: false,
-      error: err.message || "Connection error. Please try again later.",
+      message: "Connection error. Please check your internet or backend service.",
+      error: err.message,
       status: null,
+      data: null,
     };
   }
 };
@@ -124,7 +123,7 @@ export const activityAPI = {
   },
 
   create: async (activityData) => {
-    return makeRequest("/activities/create", {
+    return makeRequest("/activities", {
       method: "POST",
       body: JSON.stringify(activityData),
     });
