@@ -50,7 +50,7 @@ export default function Home() {
       const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `${baseUrl}/activities?_t=${Date.now()}`,
+        `${baseUrl}/activities`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -108,7 +108,7 @@ export default function Home() {
             </div>
 
             <div className="hero-actions">
-              {!token ? (
+              {!loggedIn ? (
                 <>
                   <Link to="/login" className="btn btn-primary">
                     Sign In
@@ -312,7 +312,7 @@ export default function Home() {
             <div className="footer-section">
               <h4>Quick Links</h4>
               <ul className="footer-links">
-                {token ? (
+                {loggedIn ? (
                   <>
                     <li>
                       <Link to="/dashboard">Dashboard</Link>
