@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useContext, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { activityAPI, getCurrentUser } from "../services/api";
+import { activityAPI } from "../services/api";
+import { AuthContext } from "../context/AuthContext";
 import { toast } from "../services/toast";
 import AccessDenied from "./AccessDenied";
 import "./AddActivity.css";
@@ -16,23 +17,35 @@ export default function AddActivity() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const user = getCurrentUser();
+  const { user, loading: authLoading } = useContext(AuthContext);
   const navigate = useNavigate();
 
   // Check if user is admin
   const isAdmin = user?.role === "admin";
+
+  // If loading auth, show loading state
+  if (authLoading) {
+    return (
+      <div className="add-activity-container">
+        <div className="loading-container">
+          <div className="spinner"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   // If not admin, show access denied
   if (!isAdmin) {
     return <AccessDenied />;
   }
 
-  const handleChange = (e) => {
+  const handleChange = useCallback((e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-  };
+  }, []);
 
-  const validateForm = () => {
+  const validateForm = useCallback(() => {
     if (!form.title.trim()) {
       const msg = "Title is required";
       setError(msg);
@@ -52,9 +65,9 @@ export default function AddActivity() {
       return false;
     }
     return true;
-  };
+  }, [form.title, form.course, form.date]);
 
-  const handleAdd = async (e) => {
+  const handleAdd = useCallback(async (e) => {
     e.preventDefault();
     setError("");
 
@@ -85,7 +98,7 @@ export default function AddActivity() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [form, navigate, validateForm]);
 
   return (
     <div className="add-activity-wrapper">

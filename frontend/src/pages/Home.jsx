@@ -1,7 +1,33 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Home.css";
 import logo from "../assets/logo.svg";
+
+// Memoized Activity Card Component
+const ActivityCard = ({ activity }) => (
+  <div className="activity-card">
+    <div className="activity-header">
+      <h3 className="activity-title">{activity.title}</h3>
+      <span className={`activity-status status-${activity.status || "Pending"}`}>
+        {activity.status || "Pending"}
+      </span>
+    </div>
+    {activity.course && (
+      <p className="activity-course">{activity.course}</p>
+    )}
+    {activity.description && (
+      <p className="activity-description">
+        {activity.description.substring(0, 100)}
+        {activity.description.length > 100 ? "..." : ""}
+      </p>
+    )}
+    {activity.date && (
+      <p className="activity-date">
+        📅 {new Date(activity.date).toLocaleDateString()}
+      </p>
+    )}
+  </div>
+);
 
 export default function Home() {
   const [activities, setActivities] = useState([]);
@@ -24,7 +50,10 @@ export default function Home() {
       const res = await fetch(
         `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/activities`,
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Accept-Encoding": "gzip, deflate"
+          },
         }
       );
 
@@ -40,6 +69,9 @@ export default function Home() {
       setLoading(false);
     }
   };
+
+  // Memoize recent activities to avoid unnecessary recalculations
+  const recentActivities = useMemo(() => activities.slice(0, 6), [activities]);
 
   return (
     <div className="home-wrapper">
@@ -125,29 +157,8 @@ export default function Home() {
               </div>
             ) : (
               <div className="activities-grid">
-                {activities.slice(0, 6).map((activity) => (
-                  <div key={activity._id} className="activity-card">
-                    <div className="activity-header">
-                      <h3 className="activity-title">{activity.title}</h3>
-                      <span className={`activity-status status-${activity.status || "Pending"}`}>
-                        {activity.status || "Pending"}
-                      </span>
-                    </div>
-                    {activity.course && (
-                      <p className="activity-course">{activity.course}</p>
-                    )}
-                    {activity.description && (
-                      <p className="activity-description">
-                        {activity.description.substring(0, 100)}
-                        {activity.description.length > 100 ? "..." : ""}
-                      </p>
-                    )}
-                    {activity.date && (
-                      <p className="activity-date">
-                        📅 {new Date(activity.date).toLocaleDateString()}
-                      </p>
-                    )}
-                  </div>
+                {recentActivities.map((activity) => (
+                  <ActivityCard key={activity._id} activity={activity} />
                 ))}
               </div>
             )}

@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext, useMemo, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { authAPI, getCurrentUser } from "../services/api";
+import { authAPI } from "../services/api";
+import { AuthContext } from "../context/AuthContext";
 import { toast } from "../services/toast";
 import AccessDenied from "./AccessDenied";
 import "./Users.css";
@@ -12,11 +13,22 @@ export default function Users() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRole, setFilterRole] = useState("all");
 
-  const user = getCurrentUser();
+  const { user, loading: authLoading } = useContext(AuthContext);
   const navigate = useNavigate();
 
   // Check if user is admin
   const isAdmin = user?.role === "admin";
+
+  if (authLoading) {
+    return (
+      <div className="users-container">
+        <div className="loading-container">
+          <div className="spinner"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!isAdmin) {
     return <AccessDenied />;
@@ -31,7 +43,7 @@ export default function Users() {
     fetchAllUsers();
   }, [user, navigate]);
 
-  const fetchAllUsers = async () => {
+  const fetchAllUsers = useCallback(async () => {
     try {
       const result = await authAPI.getAllUsers();
 
@@ -51,35 +63,37 @@ export default function Users() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  // Filter users based on search and role
-  const filteredUsers = users.filter((u) => {
-    const matchesSearch =
-      u.firstname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.lastname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.email.toLowerCase().includes(searchTerm.toLowerCase());
+  // Memoize filtered users to avoid unnecessary recalculations
+  const filteredUsers = useMemo(() => {
+    return users.filter((u) => {
+      const matchesSearch =
+        u.firstname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        u.lastname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        u.email.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesRole = filterRole === "all" || u.role === filterRole;
+      const matchesRole = filterRole === "all" || u.role === filterRole;
 
-    return matchesSearch && matchesRole;
-  });
+      return matchesSearch && matchesRole;
+    });
+  }, [users, searchTerm, filterRole]);
 
-  const getRoleBadge = (role) => {
+  const getRoleBadge = useCallback((role) => {
     return (
       <span className={`role-badge role-${role}`}>
         {role === "admin" ? "👑 Admin" : "👤 User"}
       </span>
     );
-  };
+  }, []);
 
-  const formatDate = (dateString) => {
+  const formatDate = useCallback((dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
     });
-  };
+  }, []);
 
   if (loading) {
     return (

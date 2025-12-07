@@ -54,10 +54,18 @@ export const getActivities = async (req, res) => {
         .sort({ date: -1 });
     }
     
-    res.json(activities);
+    res.json({
+      success: true,
+      data: activities,
+      message: "Activities retrieved successfully"
+    });
   } catch (error) {
     console.error("Get activities error:", error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ 
+      success: false,
+      error: error.message,
+      message: "Failed to fetch activities"
+    });
   }
 };
 
@@ -68,14 +76,25 @@ export const getActivity = async (req, res) => {
       .populate("user", "firstname lastname email");
     
     if (!activity) {
-      return res.status(404).json({ message: "Activity not found" });
+      return res.status(404).json({ 
+        success: false,
+        message: "Activity not found" 
+      });
     }
 
     // All authenticated users can view all activities
-    res.json(activity);
+    res.json({
+      success: true,
+      data: activity,
+      message: "Activity retrieved successfully"
+    });
   } catch (error) {
     console.error("Get activity error:", error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ 
+      success: false,
+      error: error.message,
+      message: "Failed to fetch activity"
+    });
   }
 };
 

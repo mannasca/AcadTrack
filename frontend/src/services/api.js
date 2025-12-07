@@ -1,89 +1,96 @@
-/**
- * ===============================================
- * API SERVICE LAYER
- * Centralized API communication with Express backend
- * ===============================================
- */
+// src/services/api.js
+// Central API service for AcadTrack
 
-// Base URL configuration
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 /**
- * Helper function to get authorization token from localStorage
+ * Get JWT token from localStorage
  */
 const getToken = () => {
   return localStorage.getItem("token");
 };
 
 /**
- * Helper function to make API requests with error handling
+ * Generic helper to call backend with proper headers + error handling
  */
-const makeRequest = async (endpoint, options = {}) => {
+const makeRequest = async (
+  endpoint,
+  { method = "GET", body = null, headers = {} } = {}
+) => {
   const token = getToken();
-  
-  const headers = {
+
+  const finalHeaders = {
     "Content-Type": "application/json",
-    ...options.headers,
+    "Accept": "application/json",
+    "Accept-Encoding": "gzip, deflate, br", // Enable compression
+    ...headers,
   };
 
   if (token) {
-    headers.Authorization = `Bearer ${token}`;
+    finalHeaders.Authorization = `Bearer ${token}`;
   }
 
   try {
-    const response = await fetch(`${BASE_URL}${endpoint}`, {
-      ...options,
-      headers,
+    const res = await fetch(`${BASE_URL}${endpoint}`, {
+      method,
+      headers: finalHeaders,
+      body,
+      // Enable keepalive for connection reuse
+      keepalive: true,
     });
 
-    const data = await response.json();
+    let data = {};
+    try {
+      data = await res.json();
+    } catch {
+      data = {};
+    }
 
-    if (!response.ok) {
-      throw new Error(data.message || `HTTP Error: ${response.status}`);
+    if (!res.ok) {
+      return {
+        success: false,
+        error: data.message || `HTTP ${res.status}`,
+        status: res.status,
+      };
+    }
+
+    // If backend returns { success, data, message }, flatten it
+    if (data.success !== undefined && data.data !== undefined) {
+      return {
+        success: data.success,
+        data: data.data,
+        message: data.message,
+        status: res.status,
+      };
     }
 
     return {
       success: true,
       data,
-      status: response.status,
+      status: res.status,
     };
-  } catch (error) {
+  } catch (err) {
     return {
       success: false,
-      error: error.message || "Connection error. Please try again later.",
+      error: err.message || "Connection error. Please try again later.",
       status: null,
     };
   }
 };
 
-/**
- * ===============================================
- * AUTHENTICATION ENDPOINTS
- * ===============================================
- */
+/* ===============================================
+ * AUTH ENDPOINTS
+ * =============================================== */
 export const authAPI = {
-  /**
-   * Register a new user
-   * @param {string} name - User's full name
-   * @param {string} email - User's email
-   * @param {string} password - User's password
-   * @param {string} adminCode - Admin code (optional, for admin registration)
-   * @returns {Promise} Response with token and user data
-   */
-  register: async (name, email, password, adminCode = "") => {
-    const [firstname, lastname] = name.split(" ");
+  // Register (adjust payload to match your backend)
+  register: async (payload) => {
     return makeRequest("/api/auth/register", {
       method: "POST",
-      body: JSON.stringify({ firstname, lastname, email, password, adminCode }),
+      body: JSON.stringify(payload),
     });
   },
 
-  /**
-   * Login user with email and password
-   * @param {string} email - User's email
-   * @param {string} password - User's password
-   * @returns {Promise} Response with token and user data
-   */
+  // Login with email + password
   login: async (email, password) => {
     return makeRequest("/api/auth/login", {
       method: "POST",
@@ -91,61 +98,32 @@ export const authAPI = {
     });
   },
 
-  /**
-   * Get all users (admin only)
-   * @returns {Promise} Array of all users
-   */
+  // Admin: get all users
   getAllUsers: async () => {
     return makeRequest("/api/auth/users/all", {
       method: "GET",
     });
   },
 
-  /**
-   * Logout user (client-side token removal)
-   */
+  // Logout on client side
   logout: () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    return {
-      success: true,
-      message: "Logged out successfully",
-    };
+    clearUserData();
+    return { success: true, message: "Logged out successfully" };
   },
 };
 
-/**
- * ===============================================
+/* ===============================================
  * ACTIVITY ENDPOINTS
- * ===============================================
- */
+ * =============================================== */
 export const activityAPI = {
-  /**
-   * Get all activities for the user
-   * @returns {Promise} Array of activities
-   */
   getAll: async () => {
-    return makeRequest("/api/activities", {
-      method: "GET",
-    });
+    return makeRequest("/api/activities", { method: "GET" });
   },
 
-  /**
-   * Get a single activity by ID
-   * @param {string} id - Activity ID
-   * @returns {Promise} Activity object
-   */
   getById: async (id) => {
-    return makeRequest(`/api/activities/${id}`, {
-      method: "GET",
-    });
+    return makeRequest(`/api/activities/${id}`, { method: "GET" });
   },
 
-  /**
-   * Create a new activity (admin only)
-   * @param {Object} activityData - Activity data object
-   * @returns {Promise} Created activity
-   */
   create: async (activityData) => {
     return makeRequest("/api/activities/create", {
       method: "POST",
@@ -153,12 +131,6 @@ export const activityAPI = {
     });
   },
 
-  /**
-   * Update an existing activity (admin only)
-   * @param {string} id - Activity ID
-   * @param {Object} activityData - Updated activity data
-   * @returns {Promise} Updated activity
-   */
   update: async (id, activityData) => {
     return makeRequest(`/api/activities/${id}`, {
       method: "PUT",
@@ -166,11 +138,6 @@ export const activityAPI = {
     });
   },
 
-  /**
-   * Delete an activity (admin only)
-   * @param {string} id - Activity ID
-   * @returns {Promise} Deletion confirmation
-   */
   delete: async (id) => {
     return makeRequest(`/api/activities/${id}`, {
       method: "DELETE",
@@ -178,22 +145,14 @@ export const activityAPI = {
   },
 };
 
-/**
- * ===============================================
- * UTILITY FUNCTIONS
- * ===============================================
- */
+/* ===============================================
+ * AUTH HELPERS
+ * =============================================== */
 
-/**
- * Check if user is authenticated
- */
 export const isAuthenticated = () => {
   return !!localStorage.getItem("token");
 };
 
-/**
- * Get current user from localStorage
- */
 export const getCurrentUser = () => {
   try {
     return JSON.parse(localStorage.getItem("user") || "null");
@@ -202,25 +161,16 @@ export const getCurrentUser = () => {
   }
 };
 
-/**
- * Check if current user is admin
- */
 export const isAdmin = () => {
   const user = getCurrentUser();
   return user?.role === "admin";
 };
 
-/**
- * Store user data after login
- */
 export const storeUserData = (token, user) => {
   localStorage.setItem("token", token);
   localStorage.setItem("user", JSON.stringify(user));
 };
 
-/**
- * Clear all user data
- */
 export const clearUserData = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("user");

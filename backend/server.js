@@ -1,60 +1,73 @@
-// ===============================
-// FORCE ONLY BACKEND .ENV
-// ===============================
-import path from "path";
-import { fileURLToPath } from "url";
+import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
+import compression from "compression";
+import connectDB from "./config/db.js";
 
-// Get runtime file paths
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+dotenv.config();
+connectDB();
 
-// Load ONLY backend/.env
-dotenv.config({
-  path: path.join(__dirname, ".env"),
-  override: true
+const app = express();
+
+// Enable aggressive compression middleware - reduces response sizes
+app.use(compression({
+  level: 9, // Maximum compression level
+  threshold: 512, // Compress everything > 512 bytes
+  filter: (req, res) => {
+    // Compress all response types
+    if (req.headers['x-no-compression']) {
+      return false;
+    }
+    return compression.filter(req, res);
+  },
+  // Support multiple compression types for better client compatibility
+  type: [
+    'application/json',
+    'application/javascript',
+    'text/html',
+    'text/css',
+    'text/plain',
+    'text/xml',
+    'application/xml',
+    'application/xml+rss',
+    'text/javascript'
+  ]
+}));
+
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+
+// IMPORTANT — Must come BEFORE routes
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Optimize response headers for performance and caching
+app.use((req, res, next) => {
+  // Cache control headers - aggressive caching for static assets
+  if (req.url.includes('/assets/') || req.url.endsWith('.js') || req.url.endsWith('.css')) {
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable'); // 1 year for hashed assets
+  } else if (req.url.includes('/api/')) {
+    res.setHeader('Cache-Control', 'public, max-age=60'); // 1 minute cache for APIs
+  } else {
+    res.setHeader('Cache-Control', 'public, max-age=300'); // 5 minutes default
+  }
+  
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+  
+  next();
 });
 
-// Debug log
-console.log(">>> USING ENV FILE:", path.join(__dirname, ".env"));
-console.log(">>> MONGO_URI:", process.env.MONGO_URI);
-
-// ===============================
-// IMPORTS
-// ===============================
-import express from "express";
-import cors from "cors";
-
-import connectDB from "./config/db.js";
+// Routes
 import authRoutes from "./routes/authRoutes.js";
 import activityRoutes from "./routes/activityRoutes.js";
 
-// ===============================
-// APP INITIALIZATION
-// ===============================
-const app = express();
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-
-// ===============================
-// CONNECT DATABASE
-// ===============================
-connectDB();
-
-// ===============================
-// ROUTES
-// ===============================
 app.use("/api/auth", authRoutes);
 app.use("/api/activities", activityRoutes);
 
-// ===============================
-// START SERVER
-// ===============================
-const PORT = process.env.PORT || 5000;
+app.get("/", (req, res) => res.send("Backend Running"));
 
-app.listen(PORT, () => {
-  console.log(`\n🔥 Server running on port ${PORT}`);
-  console.log("🔥 Connected DB should be:", process.env.MONGO_URI);
-});
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

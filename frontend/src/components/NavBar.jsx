@@ -1,20 +1,22 @@
+// src/components/NavBar.jsx
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { clearUserData } from "../services/api";
+import { AuthContext } from "../context/AuthContext";
 import "./NavBar.css";
 import logo from "../assets/logo.svg";
 
 export default function NavBar() {
-  const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, loggedIn, logout } = useContext(AuthContext);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
-  const isAdmin = user.role === "admin";
+  const isAdmin = user?.role === "admin";
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    clearUserData();
+    logout();
     setShowProfileMenu(false);
     navigate("/login");
   };
@@ -30,7 +32,7 @@ export default function NavBar() {
         </Link>
 
         <div className="nav-links">
-          {!token && (
+          {!loggedIn && (
             <>
               <Link
                 to="/login"
@@ -49,7 +51,7 @@ export default function NavBar() {
             </>
           )}
 
-          {token && (
+          {loggedIn && (
             <>
               <Link
                 to="/dashboard"
@@ -57,22 +59,28 @@ export default function NavBar() {
               >
                 Dashboard
               </Link>
+
               {isAdmin && (
                 <>
                   <Link
                     to="/add"
-                    className={`nav-link add-link ${isActive("/add") ? "active" : ""}`}
+                    className={`nav-link add-link ${
+                      isActive("/add") ? "active" : ""
+                    }`}
                   >
                     + Add Activity
                   </Link>
                   <Link
                     to="/users"
-                    className={`nav-link users-link ${isActive("/users") ? "active" : ""}`}
+                    className={`nav-link users-link ${
+                      isActive("/users") ? "active" : ""
+                    }`}
                   >
                     👥 Users
                   </Link>
                 </>
               )}
+
               <div className="profile-menu">
                 <button
                   className="nav-link profile-btn"

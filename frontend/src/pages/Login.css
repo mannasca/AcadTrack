@@ -175,7 +175,8 @@
 }
 
 /* ERROR MESSAGE */
-.error-message {
+.error-message,
+.error-banner {
   background-color: #fee2e2;
   border: 1px solid #fecaca;
   color: #991b1b;
@@ -200,7 +201,8 @@
 }
 
 /* LOGIN BUTTON */
-.login-button {
+.login-button,
+.btn-submit {
   padding: 12px 16px;
   background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   color: white;
@@ -213,52 +215,63 @@
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
   margin-top: 10px;
   font-family: var(--font-family-sans);
+  width: 100%;
 }
 
-.login-button:hover:not(:disabled) {
+.login-button:hover:not(:disabled),
+.btn-submit:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
 }
 
 .login-button:focus,
-.login-button:focus-visible {
+.login-button:focus-visible,
+.btn-submit:focus,
+.btn-submit:focus-visible {
   outline: 2px solid #2563eb;
   outline-offset: 2px;
 }
 
-.login-button:active:not(:disabled) {
+.login-button:active:not(:disabled),
+.btn-submit:active:not(:disabled) {
   transform: translateY(0);
 }
 
-.login-button:disabled {
+.login-button:disabled,
+.btn-submit:disabled {
   opacity: 0.8;
   cursor: not-allowed;
 }
 
 /* FOOTER */
-.login-footer {
+.login-footer,
+.auth-footer {
   text-align: center;
   margin-top: 24px;
   padding-top: 20px;
   border-top: 1px solid #e2e8f0;
 }
 
-.footer-text {
+.footer-text,
+.auth-footer p {
   font-size: 14px;
   color: #64748b;
   margin: 0;
   font-family: var(--font-family-sans);
 }
 
-.footer-link {
+.footer-link,
+.auth-link {
   color: #2563eb;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s ease;
   font-family: var(--font-family-sans);
+  cursor: pointer;
 }
 
-.footer-link:hover {
+.footer-link:hover,
+.auth-link:hover {
   color: #1d4ed8;
   text-decoration: underline;
 }

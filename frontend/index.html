@@ -4,10 +4,38 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AcadTrack</title>
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="description" content="AcadTrack - Academic Activity Tracking System" />
+    
+    <!-- Performance & Resource Hints -->
+    <!-- Preconnect to external resources with DNS prefetch -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="dns-prefetch" href="http://localhost:5000" />
+    
+    <!-- Critical resource hints for faster loading -->
+    <link rel="preload" as="style" href="/index.css" />
+    <link rel="modulepreload" href="/src/main.jsx" />
+    
+    <!-- Service Worker manifest for PWA support -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Web App Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="AcadTrack" />
+    
+    <title>AcadTrack - Academic Activity Manager</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <!-- Load service worker -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(err => {
+          console.log('Service Worker registration failed:', err);
+        });
+      }
+    </script>
   </body>
 </html>

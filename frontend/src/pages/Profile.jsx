@@ -1,49 +1,37 @@
-import { useState, useEffect } from "react";
+import { useContext, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+import AccessDenied from "../components/AccessDenied";
 import "./Profile.css";
 
 export default function Profile() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const token = localStorage.getItem("token");
+  const { user, loggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-
-    // Get user from localStorage
-    const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-    if (storedUser && storedUser.id) {
-      setUser(storedUser);
-    }
-    setLoading(false);
-  }, [token, navigate]);
-
-  if (loading) {
-    return (
-      <div className="profile-wrapper">
-        <div className="profile-container">
-          <div className="loading">Loading profile...</div>
-        </div>
-      </div>
-    );
+  if (!loggedIn) {
+    navigate("/login");
+    return null;
   }
 
   if (!user) {
     return (
-      <div className="profile-wrapper">
+      <div className="profile-page">
         <div className="profile-container">
-          <div className="error">No user data found. Please log in again.</div>
-          <Link to="/login" className="btn">Login</Link>
+          <p role="status" aria-live="polite">Loading profile...</p>
         </div>
       </div>
     );
   }
 
-  const isAdmin = user.role === "admin";
+  // Memoize derived values to avoid unnecessary recalculations
+  const isAdmin = useMemo(() => user?.role === "admin", [user?.role]);
+  const roleDescription = useMemo(
+    () =>
+      isAdmin
+        ? "You have full access to create, edit, and delete activities."
+        : "You can view and track your academic progress.",
+    [isAdmin]
+  );
 
   return (
     <div className="profile-wrapper">
@@ -88,20 +76,9 @@ export default function Profile() {
                   {isAdmin ? "👤 Administrator" : "👨‍🎓 Student"}
                 </span>
                 <p className="role-description">
-                  {isAdmin 
-                    ? "You have full access to create, edit, and delete activities." 
-                    : "You can view and track your academic progress."}
+                  {roleDescription}
                 </p>
               </div>
-            </div>
-
-            <div className="detail-group">
-              <label>Member Since</label>
-              <p>
-                {user?.createdAt
-                  ? new Date(user.createdAt).toLocaleDateString()
-                  : "Unknown"}
-              </p>
             </div>
           </div>
 

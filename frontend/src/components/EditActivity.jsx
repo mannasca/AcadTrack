@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+// src/pages/EditActivity.jsx
+import { useState, useEffect, useContext, useCallback } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { activityAPI, getCurrentUser } from "../services/api";
+import { activityAPI } from "../services/api";
+import { AuthContext } from "../context/AuthContext";
 import { toast } from "../services/toast";
 import AccessDenied from "./AccessDenied";
 import "./EditActivity.css";
@@ -18,26 +20,24 @@ export default function EditActivity() {
   const [success, setSuccess] = useState("");
   const [saving, setSaving] = useState(false);
 
-  const user = getCurrentUser();
+  const { user, loading: authLoading, loggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
   const { id } = useParams();
 
-  // Check if user is admin
   const isAdmin = user?.role === "admin";
 
-  // If not admin, show access denied
-  if (!isAdmin) {
-    return <AccessDenied />;
-  }
-
   useEffect(() => {
-    if (!user) {
+    if (authLoading) return;
+    
+    if (!loggedIn) {
       navigate("/login");
       return;
     }
+    if (!isAdmin) return;
 
     fetchActivity();
-  }, [user, navigate, id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, isAdmin, navigate, id]);
 
   const fetchActivity = async () => {
     try {
@@ -67,12 +67,13 @@ export default function EditActivity() {
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = useCallback((e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-  };
+    setSuccess("");
+  }, []);
 
-  const validateForm = () => {
+  const validateForm = useCallback(() => {
     if (!form.title.trim()) {
       const msg = "Title is required";
       setError(msg);
@@ -92,16 +93,14 @@ export default function EditActivity() {
       return false;
     }
     return true;
-  };
+  }, [form.title, form.course, form.date]);
 
-  const handleUpdate = async (e) => {
+  const handleUpdate = useCallback(async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
 
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setSaving(true);
 
@@ -127,7 +126,10 @@ export default function EditActivity() {
     } finally {
       setSaving(false);
     }
-  };
+  }, [form, id, navigate, validateForm]);
+
+  if (!user) return null; // redirecting
+  if (!isAdmin) return <AccessDenied />;
 
   if (loading) {
     return (
@@ -241,11 +243,7 @@ export default function EditActivity() {
           </div>
 
           <div className="form-actions">
-            <button
-              type="submit"
-              className="btn-submit"
-              disabled={saving}
-            >
+            <button type="submit" className="btn-submit" disabled={saving}>
               {saving ? "Saving..." : "Save Changes"}
             </button>
             <Link to="/dashboard" className="btn-cancel">

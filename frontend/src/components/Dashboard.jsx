@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+// src/pages/Dashboard.jsx
+import { useState, useEffect, useContext, useMemo, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { activityAPI, getCurrentUser } from "../services/api";
+import { activityAPI } from "../services/api";
+import { AuthContext } from "../context/AuthContext";
 import { toast } from "../services/toast";
 import "./Dashboard.css";
 
@@ -11,32 +13,28 @@ export default function Dashboard() {
   const [filterStatus, setFilterStatus] = useState("All");
   const [deleting, setDeleting] = useState(null);
 
-  const user = getCurrentUser();
   const navigate = useNavigate();
-  
-  const isAdmin = user?.role === "admin";
+  const { user, loggedIn, loading: authLoading } = useContext(AuthContext);
 
   useEffect(() => {
-    if (!user) {
+    // Wait for auth context to finish loading
+    if (authLoading) {
+      return;
+    }
+    
+    if (!loggedIn) {
       navigate("/login");
       return;
     }
-
     fetchActivities();
+  }, [loggedIn, navigate, authLoading]);
 
-    // Set up polling to refresh activities every 5 seconds
-    const pollInterval = setInterval(() => {
-      fetchActivities();
-    }, 5000);
+  const isAdmin = user?.role === "admin";
 
-    // Cleanup interval on unmount
-    return () => clearInterval(pollInterval);
-  }, [user, navigate]);
-
-  const fetchActivities = async () => {
+  const fetchActivities = useCallback(async () => {
+    setLoading(true);
     try {
       const result = await activityAPI.getAll();
-
       if (result.success) {
         setActivities(result.data);
         setError("");
@@ -45,28 +43,32 @@ export default function Dashboard() {
         setError(errorMsg);
         toast.error(errorMsg);
       }
-    } catch (err) {
-      const errorMsg = "Connection error";
-      setError(errorMsg);
-      toast.error(errorMsg);
-      console.error(err);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const filteredActivities =
-    filterStatus === "All"
-      ? activities
-      : activities.filter((a) => a.status === filterStatus);
+  // Memoize filtered activities to avoid unnecessary recalculations
+  const filteredActivities = useMemo(
+    () =>
+      filterStatus === "All"
+        ? activities
+        : activities.filter((a) => a.status === filterStatus),
+    [activities, filterStatus]
+  );
 
-  const statsData = {
-    total: activities.length,
-    completed: activities.filter((a) => a.status === "Completed").length,
-    pending: activities.filter((a) => a.status === "Pending" || !a.status).length,
-  };
+  // Memoize stats data
+  const statsData = useMemo(
+    () => ({
+      total: activities.length,
+      completed: activities.filter((a) => a.status === "Completed").length,
+      pending: activities.filter((a) => a.status === "Pending" || !a.status)
+        .length,
+    }),
+    [activities]
+  );
 
-  const deleteActivity = async (activityId) => {
+  const deleteActivity = useCallback(async (activityId) => {
     if (!window.confirm("Are you sure you want to delete this activity?")) {
       return;
     }
@@ -76,7 +78,7 @@ export default function Dashboard() {
       const result = await activityAPI.delete(activityId);
 
       if (result.success) {
-        setActivities(activities.filter((a) => a._id !== activityId));
+        setActivities((prev) => prev.filter((a) => a._id !== activityId));
         setError("");
         toast.success("Activity deleted successfully");
       } else {
@@ -92,10 +94,18 @@ export default function Dashboard() {
     } finally {
       setDeleting(null);
     }
-  };
+  }, []);
 
   return (
     <div className="dashboard-wrapper">
+      {authLoading ? (
+        <div className="dashboard-container">
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p>Loading your profile...</p>
+          </div>
+        </div>
+      ) : (
       <div className="dashboard-container">
         {/* Header Section */}
         <div className="dashboard-header">
@@ -112,7 +122,7 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Stats Section */}
+        {/* Stats */}
         <div className="stats-grid">
           <div className="stat-card">
             <div className="stat-icon total">📊</div>
@@ -137,14 +147,16 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Filter Section */}
+        {/* Filter */}
         <div className="filter-section">
           <h3 className="filter-title">Filter by Status</h3>
           <div className="filter-buttons">
             {["All", "Completed", "Pending"].map((status) => (
               <button
                 key={status}
-                className={`filter-btn ${filterStatus === status ? "active" : ""}`}
+                className={`filter-btn ${
+                  filterStatus === status ? "active" : ""
+                }`}
                 onClick={() => setFilterStatus(status)}
               >
                 {status}
@@ -153,10 +165,10 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Error Section */}
+        {/* Error */}
         {error && <div className="error-banner">{error}</div>}
 
-        {/* Loading Section */}
+        {/* Body */}
         {loading ? (
           <div className="loading-container">
             <div className="spinner"></div>
@@ -194,7 +206,9 @@ export default function Dashboard() {
                   </div>
 
                   {activity.description && (
-                    <p className="activity-description">{activity.description}</p>
+                    <p className="activity-description">
+                      {activity.description}
+                    </p>
                   )}
 
                   <div className="activity-meta">
@@ -214,7 +228,10 @@ export default function Dashboard() {
 
                   {isAdmin && (
                     <div className="activity-actions">
-                      <Link to={`/edit/${activity._id}`} className="btn-edit">
+                      <Link
+                        to={`/edit/${activity._id}`}
+                        className="btn-edit"
+                      >
                         ✏️ Edit
                       </Link>
                       <button
@@ -222,7 +239,9 @@ export default function Dashboard() {
                         className="btn-delete"
                         disabled={deleting === activity._id}
                       >
-                        {deleting === activity._id ? "🗑️ Deleting..." : "🗑️ Delete"}
+                        {deleting === activity._id
+                          ? "🗑️ Deleting..."
+                          : "🗑️ Delete"}
                       </button>
                     </div>
                   )}
@@ -241,6 +260,7 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+      )}
     </div>
   );
 }
