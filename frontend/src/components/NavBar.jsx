@@ -1,6 +1,6 @@
 // src/components/NavBar.jsx
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
 import { clearUserData } from "../services/api";
 import { AuthContext } from "../context/AuthContext";
 import "./NavBar.css";
@@ -11,8 +11,23 @@ export default function NavBar() {
   const location = useLocation();
   const { user, loggedIn, logout } = useContext(AuthContext);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const profileMenuRef = useRef(null);
 
   const isAdmin = user?.role === "admin";
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+        setShowProfileMenu(false);
+      }
+    };
+
+    if (showProfileMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [showProfileMenu]);
 
   const handleLogout = () => {
     clearUserData();
@@ -81,7 +96,7 @@ export default function NavBar() {
                 </>
               )}
 
-              <div className="profile-menu">
+              <div className="profile-menu" ref={profileMenuRef}>
                 <button
                   className="nav-link profile-btn"
                   onClick={() => setShowProfileMenu(!showProfileMenu)}
