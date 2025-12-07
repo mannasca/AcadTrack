@@ -1,8 +1,7 @@
-import { useState, useEffect, useMemo, useContext } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Home.css";
 import logo from "../assets/logo.svg";
-import { AuthContext } from "../context/AuthContext";
 
 // Memoized Activity Card Component
 const ActivityCard = ({ activity }) => (
@@ -32,25 +31,25 @@ const ActivityCard = ({ activity }) => (
 
 export default function Home() {
   const [activities, setActivities] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const { loggedIn } = useContext(AuthContext);
+  const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
   useEffect(() => {
     // Only fetch activities if user is logged in
-    if (loggedIn) {
+    if (token) {
       fetchActivities();
+    } else {
+      setLoading(false);
     }
-  }, [loggedIn]);
+  }, [token]);
 
   const fetchActivities = async () => {
     try {
-      setLoading(true);
       const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
-      const token = localStorage.getItem("token");
       const res = await fetch(
-        `${baseUrl}/activities?_t=${Date.now()}`,
+        `${baseUrl}/activities`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -61,13 +60,12 @@ export default function Home() {
 
       if (res.ok) {
         const data = await res.json();
-        setActivities(Array.isArray(data) ? data : data.data || []);
+        setActivities(data);
       } else {
         setError("Failed to fetch activities");
       }
     } catch (err) {
       console.error(err);
-      setError("Error loading activities");
     } finally {
       setLoading(false);
     }
@@ -137,7 +135,7 @@ export default function Home() {
       </section>
 
       {/* Activities Section - Only shown when logged in */}
-      {loggedIn && (
+      {token && (
         <section className="activities-section">
           <div className="section-container">
             <div className="section-header">
@@ -170,7 +168,7 @@ export default function Home() {
       )}
 
       {/* Features Section - Only shown when not logged in */}
-      {!loggedIn && (
+      {!token && (
         <section className="features-section">
           <div className="section-container">
             <h2 className="section-title">Why Choose AcadTrack?</h2>
@@ -275,7 +273,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section - Only shown when not logged in */}
-      {!loggedIn && (
+      {!token && (
         <section className="cta-section">
           <div className="cta-container">
             <h2 className="cta-title">Ready to Get Started?</h2>

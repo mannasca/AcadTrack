@@ -1,6 +1,6 @@
 // backend/routes/authRoutes.js
 import express from "express";
-import { register, login, getAllUsers, getProfile } from "../controllers/authController.js";
+import { register, login, getAllUsers } from "../controllers/authController.js";
 import { protect, adminOnly } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -11,11 +11,7 @@ router.post("/register", register);
 // LOGIN
 router.post("/login", login);
 
-// GET CURRENT USER PROFILE (PROTECTED)
-router.get("/profile", protect, getProfile);
-
 // GET ALL USERS (ADMIN ONLY)
 router.get("/users/all", protect, adminOnly, getAllUsers);
 
 export default router;
-
