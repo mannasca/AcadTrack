@@ -34,6 +34,7 @@ const makeRequest = async (
 
   try {
     let url = `${BASE_URL}${endpoint}`;
+    console.log(`[API] Fetching: ${url}, Token: ${token ? 'Yes' : 'No'}`);
 
     const response = await fetch(url, {
       method,
@@ -51,6 +52,8 @@ const makeRequest = async (
     } else {
       data = {};
     }
+
+    console.log(`[API] Response: ${response.status} - ${endpoint}`);
 
     // Handle non-OK responses
     if (!response.ok) {
