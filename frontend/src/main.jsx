@@ -34,5 +34,7 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />
+  </StrictMode>
+);
   </StrictMode>,
 )
