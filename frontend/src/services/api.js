@@ -105,6 +105,12 @@ export const authAPI = {
     });
   },
 
+  getAllUsers: async () => {
+    return makeRequest("/auth/users/all", {
+      method: "GET",
+    });
+  },
+
   logout: () => {
     clearUserData();
     return { success: true, message: "Logged out successfully" };
