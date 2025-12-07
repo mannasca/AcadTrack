@@ -41,6 +41,7 @@ app.use(
         "http://localhost:5173",
         "http://localhost:3000",
         "https://acadtrack.netlify.app",
+        "https://acad-track-bice.vercel.app",
         "https://acadtrack.onrender.com"
       ];
       
