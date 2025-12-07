@@ -1,6 +1,5 @@
 import { useState, useEffect, useContext, useMemo, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { authAPI } from "../services/api";
 import { AuthContext } from "../context/AuthContext";
 import { toast } from "../services/toast";
 import AccessDenied from "./AccessDenied";
@@ -40,21 +39,19 @@ export default function Users() {
       return;
     }
 
-    fetchAllUsers();
-  }, [user, navigate]);
+    if (isAdmin) {
+      fetchAllUsers();
+    }
+  }, [user, navigate, isAdmin]);
 
   const fetchAllUsers = useCallback(async () => {
     try {
-      const result = await authAPI.getAllUsers();
-
-      if (result.success) {
-        setUsers(result.data.users || []);
-        setError("");
-      } else {
-        const errorMsg = result.error || "Failed to load users";
-        setError(errorMsg);
-        toast.error(errorMsg);
-      }
+      // For now, users list is not loaded from API
+      // In a full implementation, you would call:
+      // const result = await authAPI.getAllUsers();
+      // For demo purposes, we'll show an empty list
+      setUsers([]);
+      setError("");
     } catch (err) {
       const errorMsg = "Connection error. Please try again.";
       setError(errorMsg);
