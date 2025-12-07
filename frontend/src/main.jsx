@@ -3,6 +3,9 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 
+// Cache busting - force fresh version
+console.log('AcadTrack App Loading - v' + Date.now());
+
 // Prevent back/forward cache issues
 window.addEventListener('pagehide', () => {
   // Clear any pending requests
