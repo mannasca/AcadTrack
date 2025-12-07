@@ -78,9 +78,15 @@ export default function Dashboard() {
       const result = await activityAPI.delete(activityId);
 
       if (result.success) {
+        // Remove from state immediately
         setActivities((prev) => prev.filter((a) => a._id !== activityId));
         setError("");
         toast.success("Activity deleted successfully");
+        
+        // Refetch activities to ensure sync with database
+        setTimeout(() => {
+          fetchActivities();
+        }, 500);
       } else {
         const errorMsg = result.error || "Failed to delete activity";
         setError(errorMsg);
@@ -94,7 +100,7 @@ export default function Dashboard() {
     } finally {
       setDeleting(null);
     }
-  }, []);
+  }, [fetchActivities]);
 
   return (
     <div className="dashboard-wrapper">
