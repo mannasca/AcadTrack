@@ -8,16 +8,32 @@ export function AuthProvider({ children }) {
   const [loggedIn, setLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Initialize auth state - users start logged out
-  // They must explicitly login to be authenticated
+  // Initialize auth state from localStorage on app startup
+  // This allows users to stay logged in across page refreshes
   useEffect(() => {
     try {
-      // Clear any existing localStorage on startup to ensure fresh session
-      clearUserData();
-      setUser(null);
-      setLoggedIn(false);
+      const token = localStorage.getItem("token");
+      const storedUser = localStorage.getItem("user");
+      
+      if (token && storedUser) {
+        try {
+          const userData = JSON.parse(storedUser);
+          setUser(userData);
+          setLoggedIn(true);
+        } catch (e) {
+          // Invalid JSON in localStorage, clear it
+          clearUserData();
+          setUser(null);
+          setLoggedIn(false);
+        }
+      } else {
+        setUser(null);
+        setLoggedIn(false);
+      }
     } catch (error) {
       console.error("Auth initialization error:", error);
+      setUser(null);
+      setLoggedIn(false);
     } finally {
       setLoading(false);
     }
