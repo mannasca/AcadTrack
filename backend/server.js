@@ -36,12 +36,23 @@ app.use(compression({
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://acadtrack.netlify.app"   // Your frontend URL
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "https://acadtrack.netlify.app",
+        "https://acadtrack.onrender.com"
+      ];
+      
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
