@@ -1,7 +1,11 @@
 // src/services/api.js
 // Central API service for AcadTrack
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+// IMPORTANT:
+// Updated to use the correct environment variable:
+// VITE_API_BASE_URL = "https://your-backend.onrender.com/api"
+
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
 /**
  * Get JWT token from localStorage
@@ -21,8 +25,8 @@ const makeRequest = async (
 
   const finalHeaders = {
     "Content-Type": "application/json",
-    "Accept": "application/json",
-    "Accept-Encoding": "gzip, deflate, br", // Enable compression
+    Accept: "application/json",
+    "Accept-Encoding": "gzip, deflate, br",
     ...headers,
   };
 
@@ -35,7 +39,6 @@ const makeRequest = async (
       method,
       headers: finalHeaders,
       body,
-      // Enable keepalive for connection reuse
       keepalive: true,
     });
 
@@ -54,7 +57,7 @@ const makeRequest = async (
       };
     }
 
-    // If backend returns { success, data, message }, flatten it
+    // Flatten success responses
     if (data.success !== undefined && data.data !== undefined) {
       return {
         success: data.success,
@@ -82,30 +85,26 @@ const makeRequest = async (
  * AUTH ENDPOINTS
  * =============================================== */
 export const authAPI = {
-  // Register (adjust payload to match your backend)
   register: async (payload) => {
-    return makeRequest("/api/auth/register", {
+    return makeRequest("/auth/register", {
       method: "POST",
       body: JSON.stringify(payload),
     });
   },
 
-  // Login with email + password
   login: async (email, password) => {
-    return makeRequest("/api/auth/login", {
+    return makeRequest("/auth/login", {
       method: "POST",
       body: JSON.stringify({ email, password }),
     });
   },
 
-  // Admin: get all users
   getAllUsers: async () => {
-    return makeRequest("/api/auth/users/all", {
+    return makeRequest("/auth/users/all", {
       method: "GET",
     });
   },
 
-  // Logout on client side
   logout: () => {
     clearUserData();
     return { success: true, message: "Logged out successfully" };
@@ -117,29 +116,29 @@ export const authAPI = {
  * =============================================== */
 export const activityAPI = {
   getAll: async () => {
-    return makeRequest("/api/activities", { method: "GET" });
+    return makeRequest("/activities", { method: "GET" });
   },
 
   getById: async (id) => {
-    return makeRequest(`/api/activities/${id}`, { method: "GET" });
+    return makeRequest(`/activities/${id}`, { method: "GET" });
   },
 
   create: async (activityData) => {
-    return makeRequest("/api/activities/create", {
+    return makeRequest("/activities/create", {
       method: "POST",
       body: JSON.stringify(activityData),
     });
   },
 
   update: async (id, activityData) => {
-    return makeRequest(`/api/activities/${id}`, {
+    return makeRequest(`/activities/${id}`, {
       method: "PUT",
       body: JSON.stringify(activityData),
     });
   },
 
   delete: async (id) => {
-    return makeRequest(`/api/activities/${id}`, {
+    return makeRequest(`/activities/${id}`, {
       method: "DELETE",
     });
   },
