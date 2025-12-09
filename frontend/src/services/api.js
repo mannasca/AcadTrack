@@ -104,8 +104,7 @@ export const authAPI = {
   },
 
   getAllUsers: async () => {
-    // Add timestamp to prevent caching
-    return makeRequest(`/auth/users/all?_t=${Date.now()}`, {
+    return makeRequest("/auth/users/all", {
       method: "GET",
     });
   },
@@ -121,12 +120,11 @@ export const authAPI = {
  * =============================================== */
 export const activityAPI = {
   getAll: async () => {
-    // Add timestamp to prevent caching
-    return makeRequest(`/activities?_t=${Date.now()}`, { method: "GET" });
+    return makeRequest("/activities", { method: "GET" });
   },
 
   getById: async (id) => {
-    return makeRequest(`/activities/${id}?_t=${Date.now()}`, { method: "GET" });
+    return makeRequest(`/activities/${id}`, { method: "GET" });
   },
 
   create: async (activityData) => {
