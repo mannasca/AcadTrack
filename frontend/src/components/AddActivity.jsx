@@ -13,6 +13,7 @@ export default function AddActivity() {
     course: "",
     date: "",
     status: "Pending",
+    grades: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -195,6 +196,22 @@ export default function AddActivity() {
               <option value="Completed">Completed</option>
               <option value="In Progress">In Progress</option>
             </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="grades" className="form-label">
+              Grades <span className="optional">(Optional)</span>
+            </label>
+            <input
+              id="grades"
+              type="text"
+              name="grades"
+              className="form-input"
+              placeholder="e.g., A, 90, A+"
+              value={form.grades}
+              onChange={handleChange}
+              disabled={loading}
+            />
           </div>
 
           <div className="form-actions">

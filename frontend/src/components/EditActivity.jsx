@@ -14,6 +14,7 @@ export default function EditActivity() {
     course: "",
     date: "",
     status: "Pending",
+    grades: "",
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -51,6 +52,7 @@ export default function EditActivity() {
           course: data.course || "",
           date: data.date ? data.date.split("T")[0] : "",
           status: data.status || "Pending",
+          grades: data.grades || "",
         });
       } else {
         const errorMsg = result.error || "Failed to load activity details";
@@ -240,6 +242,22 @@ export default function EditActivity() {
               <option value="In Progress">In Progress</option>
               <option value="Completed">Completed</option>
             </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="grades" className="form-label">
+              Grades <span className="optional">(Optional)</span>
+            </label>
+            <input
+              id="grades"
+              type="text"
+              name="grades"
+              className="form-input"
+              placeholder="e.g., A, 90, A+"
+              value={form.grades}
+              onChange={handleChange}
+              disabled={saving}
+            />
           </div>
 
           <div className="form-actions">
