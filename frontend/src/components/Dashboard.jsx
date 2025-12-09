@@ -33,16 +33,28 @@ export default function Dashboard() {
 
   const fetchActivities = useCallback(async () => {
     setLoading(true);
+    setError("");
     try {
+      console.log("[Dashboard] Fetching activities...");
       const result = await activityAPI.getAll();
+      
+      console.log("[Dashboard] Response:", result);
+      
       if (result.success) {
-        setActivities(result.data);
-        setError("");
+        const activityList = Array.isArray(result.data) ? result.data : [];
+        console.log("[Dashboard] Activities loaded:", activityList.length);
+        setActivities(activityList);
       } else {
         const errorMsg = result.error || "Failed to fetch activities";
+        console.error("[Dashboard] Error:", errorMsg);
         setError(errorMsg);
         toast.error(errorMsg);
       }
+    } catch (err) {
+      const errorMsg = "Connection error. Please try again.";
+      console.error("[Dashboard] Exception:", err);
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
