@@ -5,14 +5,20 @@ export const createActivity = async (req, res) => {
   try {
     // Check if user is admin
     if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Only admins can create activities" });
+      return res.status(403).json({ 
+        success: false,
+        message: "Only admins can create activities" 
+      });
     }
 
     const { title, description, course, date, status, userId } = req.body;
 
     // Validation
     if (!title || !course || !date) {
-      return res.status(400).json({ message: "Title, course, and date are required" });
+      return res.status(400).json({ 
+        success: false,
+        message: "Title, course, and date are required" 
+      });
     }
 
     // Use provided userId or default to current user (for admin creating for themselves)
@@ -28,12 +34,17 @@ export const createActivity = async (req, res) => {
     });
 
     res.status(201).json({ 
+      success: true,
       message: "Activity created successfully", 
-      activity 
+      data: activity 
     });
   } catch (error) {
     console.error("Create activity error:", error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ 
+      success: false,
+      error: error.message,
+      message: "Failed to create activity"
+    });
   }
 };
 
@@ -103,13 +114,19 @@ export const updateActivity = async (req, res) => {
   try {
     // Check if user is admin
     if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Only admins can update activities" });
+      return res.status(403).json({ 
+        success: false,
+        message: "Only admins can update activities" 
+      });
     }
 
     const activity = await Activity.findById(req.params.id);
 
     if (!activity) {
-      return res.status(404).json({ message: "Activity not found" });
+      return res.status(404).json({ 
+        success: false,
+        message: "Activity not found" 
+      });
     }
 
     // Update fields
@@ -122,12 +139,17 @@ export const updateActivity = async (req, res) => {
     await activity.save();
 
     res.json({ 
+      success: true,
       message: "Activity updated successfully", 
-      activity 
+      data: activity 
     });
   } catch (error) {
     console.error("Update activity error:", error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ 
+      success: false,
+      error: error.message,
+      message: "Failed to update activity"
+    });
   }
 };
 
@@ -136,20 +158,33 @@ export const deleteActivity = async (req, res) => {
   try {
     // Check if user is admin
     if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Only admins can delete activities" });
+      return res.status(403).json({ 
+        success: false,
+        message: "Only admins can delete activities" 
+      });
     }
 
     const activity = await Activity.findById(req.params.id);
 
     if (!activity) {
-      return res.status(404).json({ message: "Activity not found" });
+      return res.status(404).json({ 
+        success: false,
+        message: "Activity not found" 
+      });
     }
 
     await Activity.findByIdAndDelete(req.params.id);
 
-    res.json({ message: "Activity deleted successfully" });
+    res.json({ 
+      success: true,
+      message: "Activity deleted successfully" 
+    });
   } catch (error) {
     console.error("Delete activity error:", error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ 
+      success: false,
+      error: error.message,
+      message: "Failed to delete activity"
+    });
   }
 };
