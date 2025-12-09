@@ -108,9 +108,9 @@ export default function Users() {
   const filteredUsers = useMemo(() => {
     return users.filter((u) => {
       const matchesSearch =
-        u.firstname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        u.lastname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        u.email.toLowerCase().includes(searchTerm.toLowerCase());
+        (u.firstname && u.firstname.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (u.lastname && u.lastname.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (u.email && u.email.toLowerCase().includes(searchTerm.toLowerCase()));
 
       const matchesRole = filterRole === "all" || u.role === filterRole;
 
@@ -211,12 +211,12 @@ export default function Users() {
                       <td className="col-name">
                         <div className="user-name-cell">
                           <div className="avatar">
-                            {u.firstname[0]}
-                            {u.lastname[0]}
+                            {u.firstname?.[0] || ""}
+                            {u.lastname?.[0] || ""}
                           </div>
                           <div className="name-info">
                             <div className="full-name">
-                              {u.firstname} {u.lastname}
+                              {(u.firstname || "")} {(u.lastname || "")}
                             </div>
                             <div className="user-id">{u._id}</div>
                           </div>
