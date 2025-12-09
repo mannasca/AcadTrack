@@ -234,46 +234,6 @@ export default function Home() {
         </section>
       )}
 
-      {/* CI/CD Demo Section */}
-      <section className="cicd-demo-section">
-        <div className="section-container">
-          <h2 className="section-title">🚀 Continuous Integration & Deployment</h2>
-          <p className="section-subtitle">
-            This update was deployed using automated CI/CD pipeline
-          </p>
-          
-          <div className="cicd-info-grid">
-            <div className="cicd-card">
-              <div className="cicd-icon">📝</div>
-              <h3>Code Commit</h3>
-              <p>Developers commit changes to a feature branch on GitHub</p>
-            </div>
-
-            <div className="cicd-card">
-              <div className="cicd-icon">🔀</div>
-              <h3>Pull Request</h3>
-              <p>Create PR and review code changes before merging</p>
-            </div>
-
-            <div className="cicd-card">
-              <div className="cicd-icon">✅</div>
-              <h3>Auto-Deploy</h3>
-              <p>Merge to main triggers automatic Netlify deployment</p>
-            </div>
-
-            <div className="cicd-card">
-              <div className="cicd-icon">🌐</div>
-              <h3>Live Update</h3>
-              <p>Changes go live within minutes - no manual deployment needed!</p>
-            </div>
-          </div>
-
-          <div className="cicd-highlight">
-            <p>✨ <strong>Demo Success:</strong> This new CI/CD demo section was added via feature branch, merged to main, and automatically deployed! This showcases the power of continuous integration and deployment workflows.</p>
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section - Only shown when not logged in */}
       {!loggedIn && (
         <section className="cta-section">
