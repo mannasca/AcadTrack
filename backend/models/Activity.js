@@ -30,6 +30,11 @@ const activitySchema = new mongoose.Schema(
       type: String, 
       default: "Pending",
       enum: ["Pending", "In Progress", "Completed"]
+    },
+    grades: { 
+      type: String,
+      trim: true,
+      default: ""
     }
   },
   { timestamps: true }

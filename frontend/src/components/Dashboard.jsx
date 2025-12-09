@@ -242,6 +242,12 @@ export default function Dashboard() {
                           : "N/A"}
                       </span>
                     </span>
+                    {activity.grades && (
+                      <span className="meta-item">
+                        <span className="meta-label">Grades:</span>
+                        <span className="meta-value">{activity.grades}</span>
+                      </span>
+                    )}
                   </div>
 
                   {isAdmin && (
