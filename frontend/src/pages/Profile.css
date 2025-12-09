@@ -19,23 +19,6 @@
   width: 100%;
 }
 
-.back-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: #f59e0b;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 14px;
-  margin-bottom: 24px;
-  transition: all 0.3s ease;
-}
-
-.back-link:hover {
-  gap: 12px;
-  transform: translateX(-4px);
-}
-
 .profile-card {
   background: white;
   border-radius: 16px;
@@ -268,11 +251,6 @@
     width: 100%;
     padding: 11px 20px;
   }
-
-  .back-link {
-    font-size: 13px;
-    margin-bottom: 20px;
-  }
 }
 
 @media (max-width: 600px) {
@@ -325,11 +303,6 @@
   .btn {
     padding: 10px 16px;
     font-size: 14px;
-  }
-
-  .back-link {
-    font-size: 12px;
-    margin-bottom: 16px;
   }
 }
 
@@ -384,11 +357,6 @@
     padding: 10px 12px;
     font-size: 13px;
   }
-
-  .back-link {
-    font-size: 11px;
-    margin-bottom: 12px;
-  }
 }
 
 @media (max-width: 380px) {
@@ -436,11 +404,6 @@
 
   .profile-container {
     max-width: 100%;
-  }
-
-  .back-link {
-    font-size: 13px;
-    margin-bottom: 20px;
   }
 
   .profile-card {
@@ -491,11 +454,6 @@
 
   .profile-container {
     width: 100%;
-  }
-
-  .back-link {
-    font-size: 12px;
-    margin-bottom: 15px;
   }
 
   .profile-card {

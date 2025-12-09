@@ -36,10 +36,6 @@ export default function Profile() {
   return (
     <div className="profile-wrapper">
       <div className="profile-container">
-        <Link to="/dashboard" className="back-link">
-          ← Back to Dashboard
-        </Link>
-
         <div className="profile-card">
           <div className="profile-header">
             <div className="profile-avatar">
