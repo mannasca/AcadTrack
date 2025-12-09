@@ -41,9 +41,15 @@ export default function Users() {
     }
 
     if (isAdmin) {
+      console.log("[Users] Admin detected, fetching users...");
       fetchAllUsers();
     }
-  }, [user, navigate, isAdmin]);
+  }, [user, navigate, isAdmin, fetchAllUsers]);
+
+  // Log when users change
+  useEffect(() => {
+    console.log("[Users] Users state updated:", users.length, "users loaded");
+  }, [users]);
 
   const fetchAllUsers = useCallback(async () => {
     setLoading(true);
