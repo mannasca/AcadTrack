@@ -19,38 +19,7 @@ export default function Users() {
   // Check if user is admin
   const isAdmin = user?.role === "admin";
 
-  if (authLoading) {
-    return (
-      <div className="users-container">
-        <div className="loading-container">
-          <div className="spinner"></div>
-          <p>Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAdmin) {
-    return <AccessDenied />;
-  }
-
-  useEffect(() => {
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-
-    if (isAdmin) {
-      console.log("[Users] Admin detected, fetching users...");
-      fetchAllUsers();
-    }
-  }, [user, navigate, isAdmin, fetchAllUsers]);
-
-  // Log when users change
-  useEffect(() => {
-    console.log("[Users] Users state updated:", users.length, "users loaded");
-  }, [users]);
-
+  // Define fetchAllUsers FIRST before useEffect that uses it
   const fetchAllUsers = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -102,6 +71,38 @@ export default function Users() {
       setLoading(false);
     }
   }, []);
+
+  if (authLoading) {
+    return (
+      <div className="users-container">
+        <div className="loading-container">
+          <div className="spinner"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return <AccessDenied />;
+  }
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    if (isAdmin) {
+      console.log("[Users] Admin detected, fetching users...");
+      fetchAllUsers();
+    }
+  }, [user, navigate, isAdmin, fetchAllUsers]);
+
+  // Log when users change
+  useEffect(() => {
+    console.log("[Users] Users state updated:", users.length, "users loaded");
+  }, [users]);
 
   // Memoize filtered users to avoid unnecessary recalculations
   const filteredUsers = useMemo(() => {
