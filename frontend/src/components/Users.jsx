@@ -58,19 +58,39 @@ export default function Users() {
       console.log("[Users] Fetching all users from backend...");
       const result = await authAPI.getAllUsers();
       
-      console.log("[Users] API Response:", result);
+      console.log("[Users] Full API Response:", result);
+      console.log("[Users] Response success:", result.success);
+      console.log("[Users] Response users:", result.users);
+      console.log("[Users] Response data:", result.data);
       
-      if (result.success) {
-        // Handle both possible response formats
-        const usersList = result.users || result.data || [];
-        console.log("[Users] Loaded users:", usersList.length);
-        setUsers(Array.isArray(usersList) ? usersList : []);
-      } else {
+      // Try to extract users from various possible response formats
+      let usersList = [];
+      
+      if (result.users && Array.isArray(result.users)) {
+        usersList = result.users;
+        console.log("[Users] Got users from result.users");
+      } else if (result.data && Array.isArray(result.data)) {
+        usersList = result.data;
+        console.log("[Users] Got users from result.data");
+      } else if (Array.isArray(result)) {
+        usersList = result;
+        console.log("[Users] Got users from result directly");
+      }
+      
+      console.log("[Users] Extracted users array:", usersList.length, "users");
+      
+      if (usersList.length > 0 || result.success === true) {
+        setUsers(usersList);
+        setError("");
+      } else if (result.success === false) {
         const errorMsg = result.error || result.message || "Failed to fetch users";
-        console.error("[Users] Error from API:", errorMsg);
+        console.error("[Users] API returned error:", errorMsg);
         setError(errorMsg);
         toast.error(errorMsg);
         setUsers([]);
+      } else {
+        console.warn("[Users] Unexpected response format");
+        setUsers(usersList);
       }
     } catch (err) {
       const errorMsg = "Connection error. Please try again.";
