@@ -104,7 +104,8 @@ export const authAPI = {
   },
 
   getAllUsers: async () => {
-    return makeRequest("/auth/users/all", {
+    // Add timestamp to prevent caching
+    return makeRequest(`/auth/users/all?_t=${Date.now()}`, {
       method: "GET",
     });
   },

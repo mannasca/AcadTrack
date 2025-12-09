@@ -130,10 +130,18 @@ export const login = async (req, res) => {
 export const getAllUsers = async (req, res) => {
   try {
     // req.user is set by auth middleware
+    if (!req.user) {
+      return res.status(401).json({ 
+        success: false, 
+        message: "Not authenticated" 
+      });
+    }
+
     if (req.user.role !== "admin") {
-      return res
-        .status(403)
-        .json({ success: false, message: "Only admins can view all users" });
+      return res.status(403).json({ 
+        success: false, 
+        message: "Only admins can view all users" 
+      });
     }
 
     const users = await User.find().select("-password").sort({ createdAt: -1 });
@@ -142,13 +150,15 @@ export const getAllUsers = async (req, res) => {
       success: true,
       message: "Users retrieved successfully",
       count: users.length,
-      users,
+      data: users,
+      users: users,
     });
   } catch (err) {
     console.error("Get users error:", err);
     return res.status(500).json({
       success: false,
       message: err.message || "Failed to fetch users",
+      error: err.message,
     });
   }
 };

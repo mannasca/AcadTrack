@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext, useMemo, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { authAPI } from "../services/api";
 import { AuthContext } from "../context/AuthContext";
 import { toast } from "../services/toast";
 import AccessDenied from "./AccessDenied";
@@ -45,18 +46,32 @@ export default function Users() {
   }, [user, navigate, isAdmin]);
 
   const fetchAllUsers = useCallback(async () => {
+    setLoading(true);
+    setError("");
     try {
-      // For now, users list is not loaded from API
-      // In a full implementation, you would call:
-      // const result = await authAPI.getAllUsers();
-      // For demo purposes, we'll show an empty list
-      setUsers([]);
-      setError("");
+      console.log("[Users] Fetching all users from backend...");
+      const result = await authAPI.getAllUsers();
+      
+      console.log("[Users] API Response:", result);
+      
+      if (result.success) {
+        // Handle both possible response formats
+        const usersList = result.users || result.data || [];
+        console.log("[Users] Loaded users:", usersList.length);
+        setUsers(Array.isArray(usersList) ? usersList : []);
+      } else {
+        const errorMsg = result.error || result.message || "Failed to fetch users";
+        console.error("[Users] Error from API:", errorMsg);
+        setError(errorMsg);
+        toast.error(errorMsg);
+        setUsers([]);
+      }
     } catch (err) {
       const errorMsg = "Connection error. Please try again.";
+      console.error("[Users] Exception:", err);
       setError(errorMsg);
       toast.error(errorMsg);
-      console.error(err);
+      setUsers([]);
     } finally {
       setLoading(false);
     }
