@@ -24,9 +24,6 @@ export default function AccessDenied() {
           <Link to="/dashboard" className="btn-return">
             ← Return to Dashboard
           </Link>
-          <Link to="/home" className="btn-home">
-            Go to Home
-          </Link>
         </div>
       </div>
     </div>
