@@ -11,7 +11,7 @@ export const createActivity = async (req, res) => {
       });
     }
 
-    const { title, description, course, date, status, userId } = req.body;
+    const { title, description, course, date, status, grades, userId } = req.body;
 
     // Validation
     if (!title || !course || !date) {
@@ -31,6 +31,7 @@ export const createActivity = async (req, res) => {
       course: course.trim(),
       date: new Date(date),
       status: status || "Pending",
+      grades: grades?.trim() || "",
     });
 
     res.status(201).json({ 
@@ -135,6 +136,7 @@ export const updateActivity = async (req, res) => {
     if (req.body.course) activity.course = req.body.course.trim();
     if (req.body.date) activity.date = new Date(req.body.date);
     if (req.body.status) activity.status = req.body.status;
+    if (req.body.grades !== undefined) activity.grades = req.body.grades.trim();
 
     await activity.save();
 
